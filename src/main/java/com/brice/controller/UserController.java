@@ -1,20 +1,33 @@
 package com.brice.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.brice.common.R;
+import com.brice.dto.UserDto;
+import com.brice.entity.ApartmentComplex;
 import com.brice.entity.User;
+import com.brice.service.ApartmentComplexService;
 import com.brice.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
+@Slf4j
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ApartmentComplexService apartmentComplexService;
 
     /**
      * 用户登录
@@ -73,9 +86,9 @@ public class UserController {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, username);
         User one = userService.getOne(queryWrapper);
-        if (one == null){
+        if (one == null) {
             return R.success("");
-        }else {
+        } else {
             return R.error("该用户名已存在");
         }
     }
@@ -87,8 +100,59 @@ public class UserController {
      * @return 成功与否
      */
     @PutMapping
-    public R<String> update(@RequestBody User user){
+    public R<String> update(@RequestBody User user) {
         userService.updateById(user);
-        return R.success("success");
+        return R.success("更新成功");
+    }
+
+    /**
+     * 用户数据分页查询
+     *
+     * @param page     当前页码
+     * @param pageSize 每一页显示的条数
+     * @param name     条件（姓名）
+     * @return 处理过后的用户数据
+     */
+    @GetMapping("/page")
+    public R<Page<UserDto>> getAll(int page, int pageSize, String name) {
+        //添加分页构造器
+        Page<User> pageInfo = new Page<>(page, pageSize);
+        //条件构造器
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(name), User::getName, name);
+        //查询出对应页数的数据
+        userService.page(pageInfo, queryWrapper);
+        //list对象拷贝
+        Page<UserDto> userDtoPage = new Page<>();
+        //排除数据库内容
+        BeanUtils.copyProperties(pageInfo, userDtoPage, "records");
+
+        List<User> records = pageInfo.getRecords();
+        List<UserDto> list = records.stream().map(user -> {
+            //对象拷贝
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(user, userDto);
+            //根据居民自身的小区id查询小区名字
+            ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
+            if (apartmentComplex != null) {
+                userDto.setAcName(apartmentComplex.getAcName());
+            }
+            return userDto;
+        }).collect(Collectors.toList());
+        //重新写入新数据
+        userDtoPage.setRecords(list);
+        return R.success(userDtoPage);
+    }
+
+    /**
+     * 根据id删除用户
+     *
+     * @param id 用户id
+     * @return 成功与否
+     */
+    @DeleteMapping("/{id}")
+    public R<String> deleteById(@PathVariable Long id) {
+        userService.removeById(id);
+        return R.success("删除成功");
     }
 }
