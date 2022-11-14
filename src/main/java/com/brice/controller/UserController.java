@@ -113,13 +113,14 @@ public class UserController {
      * @param name     条件（姓名）
      * @return 处理过后的用户数据
      */
-    @GetMapping("/page")
-    public R<Page<UserDto>> getAll(int page, int pageSize, String name) {
+    @GetMapping("/page/{role}")
+    public R<Page<UserDto>> getAll(int page, int pageSize, String name, @PathVariable Integer role) {
         //添加分页构造器
         Page<User> pageInfo = new Page<>(page, pageSize);
         //条件构造器
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(name), User::getName, name);
+        queryWrapper.eq(User::getRole,role);
         //查询出对应页数的数据
         userService.page(pageInfo, queryWrapper);
         //list对象拷贝
@@ -154,5 +155,30 @@ public class UserController {
     public R<String> deleteById(@PathVariable Long id) {
         userService.removeById(id);
         return R.success("删除成功");
+    }
+
+    /**
+     * 根据id查询用户
+     *
+     * @param id 用户id
+     * @return 返回用户对象
+     */
+    @GetMapping("/{id}")
+    public R<User> getById(@PathVariable Long id){
+        User user = userService.getById(id);
+        return R.success(user);
+    }
+
+    /**
+     * 新增员工
+     *
+     * @param user 员工对象
+     * @return 成功信息
+     */
+    @PostMapping
+    public R<String> add(@RequestBody User user){
+        user.setRole(1);
+        userService.save(user);
+        return R.success("添加成功");
     }
 }

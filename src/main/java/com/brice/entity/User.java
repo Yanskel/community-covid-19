@@ -12,4 +12,5 @@ public class User {
     private String idNumber;
     private Long acId;
     private Integer status;
+    private Integer role;
 }
