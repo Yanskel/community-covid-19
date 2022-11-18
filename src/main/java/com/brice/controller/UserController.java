@@ -9,7 +9,6 @@ import com.brice.entity.ApartmentComplex;
 import com.brice.entity.User;
 import com.brice.service.ApartmentComplexService;
 import com.brice.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -21,11 +20,9 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
-@Slf4j
 public class UserController {
     @Autowired
     private UserService userService;
-
     @Autowired
     private ApartmentComplexService apartmentComplexService;
 
@@ -58,8 +55,20 @@ public class UserController {
         if (userOne.getStatus() == 0) {
             return R.error("该账户已禁用，请联系管理员");
         }
-        request.getSession().setAttribute("user", userOne.getId());
+        request.getSession().setAttribute("user", userOne);
         return R.success(userOne);
+    }
+
+    /**
+     * 用户退出
+     *
+     * @param request session
+     * @return 退出成功
+     */
+    @PostMapping("/logout")
+    public R<String> logout(HttpServletRequest request){
+        request.getSession().removeAttribute("user");
+        return R.success("已退出");
     }
 
     /**
