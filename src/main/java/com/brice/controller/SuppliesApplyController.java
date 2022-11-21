@@ -17,6 +17,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,6 +87,15 @@ public class SuppliesApplyController {
         }
         suppliesApplyService.updateById(suppliesApply);
         return R.success("审批成功");
+    }
+
+    @PostMapping
+    public R<String> add(@RequestBody SuppliesApply suppliesApply, HttpServletRequest request){
+        User user = (User) request.getSession().getAttribute("user");
+        suppliesApply.setResidentId(user.getId());
+        suppliesApply.setApplyTime(LocalDateTime.now());
+        suppliesApplyService.save(suppliesApply);
+        return R.success("提交成功");
     }
 
     /**
