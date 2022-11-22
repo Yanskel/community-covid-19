@@ -1,5 +1,6 @@
 package com.brice.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -66,7 +67,7 @@ public class UserController {
      * @return 退出成功
      */
     @PostMapping("/logout")
-    public R<String> logout(HttpServletRequest request){
+    public R<String> logout(HttpServletRequest request) {
         request.getSession().removeAttribute("user");
         return R.success("已退出");
     }
@@ -129,7 +130,7 @@ public class UserController {
         //条件构造器
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(name), User::getName, name);
-        queryWrapper.eq(User::getRole,role);
+        queryWrapper.eq(User::getRole, role);
         //查询出对应页数的数据
         userService.page(pageInfo, queryWrapper);
         //list对象拷贝
@@ -173,7 +174,7 @@ public class UserController {
      * @return 返回用户对象
      */
     @GetMapping("/{id}")
-    public R<User> getById(@PathVariable Long id){
+    public R<User> getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return R.success(user);
     }
@@ -185,9 +186,49 @@ public class UserController {
      * @return 成功信息
      */
     @PostMapping
-    public R<String> add(@RequestBody User user){
+    public R<String> add(@RequestBody User user) {
         user.setRole(1);
         userService.save(user);
         return R.success("添加成功");
+    }
+
+    /**
+     * Excel导出
+     *
+     * @return 导出成功
+     */
+    @PostMapping("/export")
+    public R<String> export() {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getRole, 0);
+        List<User> list = userService.list(queryWrapper);
+        List<UserDto> userDtoList = list.stream().map(user -> {
+            UserDto userDto = new UserDto();
+            userDto.setUsername(user.getUsername());
+            userDto.setPassword(user.getPassword());
+            userDto.setName(user.getName());
+            userDto.setPhone(user.getPhone());
+            userDto.setIdNumber(user.getIdNumber());
+            ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
+            userDto.setAcName(apartmentComplex.getAcName());
+            if (user.getStatus() == 1) {
+                userDto.setAccountStatus("正常");
+            } else {
+                userDto.setAccountStatus("禁用");
+            }
+            return userDto;
+        }).collect(Collectors.toList());
+
+        String PATH = "D:\\Project\\IDEAProject\\community-covid-19\\";
+        String fileName = PATH + "居民表" + System.currentTimeMillis() + ".xlsx";
+
+        EasyExcel.write(fileName, UserDto.class)
+                .sheet("模板")
+                .doWrite(() -> {
+                    // 分页查询数据
+                    return userDtoList;
+                });
+
+        return R.success("导出成功");
     }
 }
