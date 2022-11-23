@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.brice.common.R;
 import com.brice.dto.UserDto;
 import com.brice.entity.ApartmentComplex;
+import com.brice.entity.Menu;
 import com.brice.entity.User;
 import com.brice.service.ApartmentComplexService;
+import com.brice.service.MenuService;
 import com.brice.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,6 +30,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ApartmentComplexService apartmentComplexService;
+    @Autowired
+    private MenuService menuService;
 
     /**
      * 用户登录
@@ -35,7 +41,7 @@ public class UserController {
      * @return 返回用户对象
      */
     @PostMapping("/login")
-    public R<User> login(@RequestBody User user, HttpServletRequest request) {
+    public R<Map> login(@RequestBody User user, HttpServletRequest request) {
         //密码进行MD5
         String password = user.getPassword();
         password = DigestUtils.md5DigestAsHex(password.getBytes());
@@ -57,7 +63,12 @@ public class UserController {
             return R.error("该账户已禁用，请联系管理员");
         }
         request.getSession().setAttribute("user", userOne);
-        return R.success(userOne);
+        List<Menu> menus = menuService.getAll(userOne.getRole());
+        Map map = new HashMap<>();
+        map.put("user",userOne);
+        map.put("menu",menus);
+
+        return R.success(map);
     }
 
     /**
@@ -111,6 +122,10 @@ public class UserController {
      */
     @PutMapping
     public R<String> update(@RequestBody User user) {
+        if (user.getPassword().length() <= 16) {
+            String password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
+            user.setPassword(password);
+        }
         userService.updateById(user);
         return R.success("更新成功");
     }
