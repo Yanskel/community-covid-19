@@ -48,10 +48,10 @@ public class HealthInfoController {
     /**
      * 动态分页查询
      *
-     * @param page 当前页码
+     * @param page     当前页码
      * @param pageSize 每页数据量
-     * @param userId 用户id
-     * @param name 模糊姓名
+     * @param userId   用户id
+     * @param name     模糊姓名
      * @return 分页数据
      */
     @GetMapping("/page")
@@ -60,6 +60,7 @@ public class HealthInfoController {
         LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(name != null, HealthInfo::getResidentName, name);
         queryWrapper.eq(userId != null, HealthInfo::getResidentId, userId);
+        queryWrapper.orderByDesc(HealthInfo::getSubmitTime);
         healthInfoService.page(pageInfo, queryWrapper);
 
         Page<HealthInfoDto> healthInfoDtoPage = new Page<>();
@@ -84,5 +85,21 @@ public class HealthInfoController {
         healthInfoDtoPage.setRecords(list);
 
         return R.success(healthInfoDtoPage);
+    }
+
+    /**
+     * 查询是否已经健康填报
+     *
+     * @param request session
+     * @return 健康数据集合
+     */
+    @GetMapping
+    public R<List<HealthInfo>> getList(HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("user");
+        LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(HealthInfo::getResidentId, user.getId());
+        queryWrapper.orderByDesc(HealthInfo::getSubmitTime);
+        List<HealthInfo> list = healthInfoService.list(queryWrapper);
+        return R.success(list);
     }
 }
