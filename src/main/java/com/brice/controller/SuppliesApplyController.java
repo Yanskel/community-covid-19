@@ -89,6 +89,13 @@ public class SuppliesApplyController {
         return R.success("审批成功");
     }
 
+    /**
+     * 物资申请
+     *
+     * @param suppliesApply 物资实体
+     * @param request session
+     * @return 申请提交成功与否
+     */
     @PostMapping
     public R<String> add(@RequestBody SuppliesApply suppliesApply, HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");

@@ -28,26 +28,34 @@ public class AdminController {
     /**
      * 管理员登录
      *
-     * @param admin 用户对象
+     * @param admin   用户对象
      * @param request session
      * @return 正确的用户对象
      */
     @PostMapping("/login")
-    public R<Map> login(@RequestBody Admin admin, HttpServletRequest request){
+    public R<Map> login(@RequestBody Admin admin, HttpServletRequest request) {
+        String username = admin.getUsername();
+        String password = admin.getPassword();
+        if (username == null || username.equals("")) {
+            return R.error("请输入用户名");
+        }
+        if (password == null || password.equals("")) {
+            return R.error("请输入密码");
+        }
         LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Admin::getUsername,admin.getUsername());
+        queryWrapper.eq(Admin::getUsername, username);
         Admin adminOne = adminService.getOne(queryWrapper);
         if (adminOne == null) {
             return R.error("该用户名不存在");
         }
-        if (!adminOne.getPassword().equals(admin.getPassword())){
+        if (!adminOne.getPassword().equals(password)) {
             return R.error("密码错误");
         }
-        request.getSession().setAttribute("user",adminOne);
+        request.getSession().setAttribute("user", adminOne);
         List<Menu> menus = menuService.getAll(null);
         Map map = new HashMap<>();
-        map.put("admin",adminOne);
-        map.put("menu",menus);
+        map.put("admin", adminOne);
+        map.put("menu", menus);
         return R.success(map);
     }
 }

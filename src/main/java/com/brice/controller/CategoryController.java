@@ -16,6 +16,11 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * 获取所有物资种类
+     *
+     * @return 物资种类数据
+     */
     @GetMapping
     public R<List<Category>> getAll(){
         List<Category> list = categoryService.list();

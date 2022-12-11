@@ -17,7 +17,7 @@ public class AnnouncementController {
     private AnnouncementService announcementService;
 
     /**
-     * 从新到旧获取所有公告
+     * 从新到旧查询所有公告
      *
      * @return 排序后的所有公告
      */

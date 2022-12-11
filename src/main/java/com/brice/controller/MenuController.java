@@ -1,6 +1,5 @@
 package com.brice.controller;
 
-import com.brice.common.R;
 import com.brice.entity.Menu;
 import com.brice.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;

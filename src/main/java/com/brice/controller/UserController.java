@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.brice.common.R;
 import com.brice.dto.UserDto;
 import com.brice.entity.ApartmentComplex;
+import com.brice.entity.HealthInfo;
 import com.brice.entity.Menu;
 import com.brice.entity.User;
 import com.brice.service.ApartmentComplexService;
+import com.brice.service.HealthInfoService;
 import com.brice.service.MenuService;
 import com.brice.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +34,9 @@ public class UserController {
     private ApartmentComplexService apartmentComplexService;
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private HealthInfoService healthInfoService;
 
     /**
      * 用户登录
@@ -122,6 +127,17 @@ public class UserController {
      */
     @PutMapping
     public R<String> update(@RequestBody User user) {
+        User byId = userService.getById(user.getId());
+        //如果姓名修改，则同时修改健康信息中对应的数据
+        if (byId.getName() != user.getName()){
+            LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(HealthInfo::getResidentId,user.getId());
+            List<HealthInfo> healthInfoList = healthInfoService.list(queryWrapper);
+            for (HealthInfo healthInfo : healthInfoList) {
+                healthInfo.setResidentName(user.getName());
+            }
+            healthInfoService.updateBatchById(healthInfoList);
+        }
         if (user.getPassword().length() <= 16) {
             String password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
             user.setPassword(password);
