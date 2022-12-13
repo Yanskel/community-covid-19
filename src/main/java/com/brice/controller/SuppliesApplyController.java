@@ -44,6 +44,7 @@ public class SuppliesApplyController {
         Page<SuppliesApply> pageInfo = new Page<>(page, pageSize);
         LambdaQueryWrapper<SuppliesApply> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(userId != null, SuppliesApply::getResidentId, userId).eq(status != -1, SuppliesApply::getStatus, status);
+        queryWrapper.orderByDesc(SuppliesApply::getApplyTime);
         suppliesApplyService.page(pageInfo, queryWrapper);
 
         Page<SuppliesApplyDto> suppliesApplyDtoPage = new Page<>();
