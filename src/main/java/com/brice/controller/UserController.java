@@ -70,8 +70,8 @@ public class UserController {
         request.getSession().setAttribute("user", userOne);
         List<Menu> menus = menuService.getAll(userOne.getRole());
         Map map = new HashMap<>();
-        map.put("user",userOne);
-        map.put("menu",menus);
+        map.put("user", userOne);
+        map.put("menu", menus);
 
         return R.success(map);
     }
@@ -129,9 +129,9 @@ public class UserController {
     public R<String> update(@RequestBody User user) {
         User byId = userService.getById(user.getId());
         //如果姓名修改，则同时修改健康信息中对应的数据
-        if (byId.getName() != user.getName()){
+        if (byId.getName() != user.getName()) {
             LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(HealthInfo::getResidentId,user.getId());
+            queryWrapper.eq(HealthInfo::getResidentId, user.getId());
             List<HealthInfo> healthInfoList = healthInfoService.list(queryWrapper);
             for (HealthInfo healthInfo : healthInfoList) {
                 healthInfo.setResidentName(user.getName());
@@ -261,5 +261,11 @@ public class UserController {
                 });
 
         return R.success("导出成功");
+    }
+
+    @PutMapping("/firstUpdate")
+    public R<User> firstUpdate(@RequestBody User user){
+        userService.updateById(user);
+        return R.success(user);
     }
 }

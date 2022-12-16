@@ -70,7 +70,7 @@ public class SuppliesApplyController {
     }
 
     /**
-     * 审批物资申请记录
+     * 审批物资
      *
      * @param suppliesApply 审批后的信息
      * @return 审批成功
