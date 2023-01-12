@@ -8,6 +8,6 @@ import lombok.Data;
 public class UserDto extends User {
     @ExcelProperty(value = "居住小区" ,index = 5)
     private String acName;
-    @ExcelProperty(value = "账号状态" ,index = 6)
+    @ExcelProperty(value = "账号状态" ,index = 7)
     private String accountStatus;
 }

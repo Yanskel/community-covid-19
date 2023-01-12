@@ -9,4 +9,5 @@ public class SuppliesApplyDto extends SuppliesApply {
     private String residentPhone;
     private String acName;
     private String suppliesName;
+    private String address;
 }

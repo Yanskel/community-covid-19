@@ -7,4 +7,5 @@ import lombok.Data;
 public class HealthInfoDto extends HealthInfo {
     private String residentPhone;
     private String acName;
+    private String address;
 }

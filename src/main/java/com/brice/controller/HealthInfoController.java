@@ -77,6 +77,7 @@ public class HealthInfoController {
             ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
 
             healthInfoDto.setResidentPhone(user.getPhone());
+            healthInfoDto.setAddress(user.getAddress());
             healthInfoDto.setAcName(apartmentComplex.getAcName());
 
             return healthInfoDto;

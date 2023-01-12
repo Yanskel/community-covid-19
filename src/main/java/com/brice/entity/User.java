@@ -20,6 +20,8 @@ public class User {
     private String idNumber;
     @ExcelIgnore
     private Long acId;
+    @ExcelProperty(value = "家庭住址",index = 6)
+    private String address;
     @ExcelIgnore
     private Integer status;
     @ExcelIgnore

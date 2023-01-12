@@ -83,6 +83,9 @@ public class SuppliesApplyController {
             Supplies supplies = suppliesService.getById(suppliesApply.getSuppliesId());
             //物资总数
             Integer sum = supplies.getTotal();
+            if (sum - suppliesApply.getNumber() < 0) {
+                return R.error("数量不足");
+            }
             supplies.setTotal(sum - suppliesApply.getNumber());
             suppliesService.updateById(supplies);
         }
@@ -94,11 +97,11 @@ public class SuppliesApplyController {
      * 物资申请
      *
      * @param suppliesApply 物资实体
-     * @param request session
+     * @param request       session
      * @return 申请提交成功与否
      */
     @PostMapping
-    public R<String> add(@RequestBody SuppliesApply suppliesApply, HttpServletRequest request){
+    public R<String> add(@RequestBody SuppliesApply suppliesApply, HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("user");
         suppliesApply.setResidentId(user.getId());
         suppliesApply.setApplyTime(LocalDateTime.now());
@@ -124,6 +127,7 @@ public class SuppliesApplyController {
 
         User user = userService.getById(item.getResidentId());
         suppliesApplyDto.setResidentName(user.getName());
+        suppliesApplyDto.setAddress(user.getAddress());
         suppliesApplyDto.setResidentPhone(user.getPhone());
 
         ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
