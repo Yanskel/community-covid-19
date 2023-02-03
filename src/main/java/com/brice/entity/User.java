@@ -16,11 +16,11 @@ public class User {
     private String name;
     @ExcelProperty(value = "手机号", index = 3)
     private String phone;
-    @ExcelProperty(value = "身份证" ,index = 4)
+    @ExcelProperty(value = "身份证", index = 4)
     private String idNumber;
     @ExcelIgnore
     private Long acId;
-    @ExcelProperty(value = "家庭住址",index = 6)
+    @ExcelProperty(value = "家庭住址", index = 6)
     private String address;
     @ExcelIgnore
     private Integer status;

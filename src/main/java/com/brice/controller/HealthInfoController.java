@@ -74,11 +74,13 @@ public class HealthInfoController {
 
             User user = userService.getById(item.getResidentId());
 
-            ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
+            if (user.getAcId()!=null){
+                ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
 
-            healthInfoDto.setResidentPhone(user.getPhone());
-            healthInfoDto.setAddress(user.getAddress());
-            healthInfoDto.setAcName(apartmentComplex.getAcName());
+                healthInfoDto.setResidentPhone(user.getPhone());
+                healthInfoDto.setAddress(user.getAddress());
+                healthInfoDto.setAcName(apartmentComplex.getAcName());
+            }
 
             return healthInfoDto;
         }).collect(Collectors.toList());

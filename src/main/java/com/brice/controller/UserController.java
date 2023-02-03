@@ -240,6 +240,7 @@ public class UserController {
             userDto.setName(user.getName());
             userDto.setPhone(user.getPhone());
             userDto.setIdNumber(user.getIdNumber());
+            userDto.setAddress(user.getAddress());
             ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
             userDto.setAcName(apartmentComplex.getAcName());
             if (user.getStatus() == 1) {
