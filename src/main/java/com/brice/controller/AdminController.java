@@ -33,7 +33,7 @@ public class AdminController {
      * @return 正确的用户对象
      */
     @PostMapping("/login")
-    public R<Map> login(@RequestBody Admin admin, HttpServletRequest request) {
+    public R<Map<String, Object>> login(@RequestBody Admin admin, HttpServletRequest request) {
         String username = admin.getUsername();
         String password = admin.getPassword();
         if (username == null || username.equals("")) {
@@ -53,7 +53,7 @@ public class AdminController {
         }
         request.getSession().setAttribute("user", adminOne);
         List<Menu> menus = menuService.getAll(null);
-        Map map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("admin", adminOne);
         map.put("menu", menus);
         return R.success(map);

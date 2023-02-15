@@ -20,10 +20,15 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.brice.common.JacksonObjectMapper.DEFAULT_DATE_FORMAT;
 
 @RestController
 @RequestMapping("/api/user")
@@ -34,7 +39,6 @@ public class UserController {
     private ApartmentComplexService apartmentComplexService;
     @Autowired
     private MenuService menuService;
-
     @Autowired
     private HealthInfoService healthInfoService;
 
@@ -69,7 +73,7 @@ public class UserController {
         }
         request.getSession().setAttribute("user", userOne);
         List<Menu> menus = menuService.getAll(userOne.getRole());
-        Map map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("user", userOne);
         map.put("menu", menus);
 
@@ -129,7 +133,7 @@ public class UserController {
     public R<String> update(@RequestBody User user) {
         User byId = userService.getById(user.getId());
         //如果姓名修改，则同时修改健康信息中对应的数据
-        if (byId.getName() != user.getName()) {
+        if (!Objects.equals(byId.getName(), user.getName())) {
             LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(HealthInfo::getResidentId, user.getId());
             List<HealthInfo> healthInfoList = healthInfoService.list(queryWrapper);
@@ -235,12 +239,8 @@ public class UserController {
         List<User> list = userService.list(queryWrapper);
         List<UserDto> userDtoList = list.stream().map(user -> {
             UserDto userDto = new UserDto();
-            userDto.setUsername(user.getUsername());
-            userDto.setPassword(user.getPassword());
-            userDto.setName(user.getName());
-            userDto.setPhone(user.getPhone());
-            userDto.setIdNumber(user.getIdNumber());
-            userDto.setAddress(user.getAddress());
+            BeanUtils.copyProperties(user, userDto);
+
             ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
             userDto.setAcName(apartmentComplex.getAcName());
             if (user.getStatus() == 1) {
@@ -251,8 +251,15 @@ public class UserController {
             return userDto;
         }).collect(Collectors.toList());
 
-        String PATH = "D:\\Project\\IDEAProject\\community-covid-19\\";
-        String fileName = PATH + "居民表" + System.currentTimeMillis() + ".xlsx";
+        //获取当前计算机用户名
+        String user = System.getProperty("user.name");
+
+        //日期格式化
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
+        String time = LocalDateTime.now().format(timeFormatter);
+
+        String PATH = "C:\\Users\\" + user + "\\Desktop\\";
+        String fileName = PATH + "居民表" + time + ".xlsx";
 
         EasyExcel.write(fileName, UserDto.class)
                 .sheet("模板")
@@ -261,11 +268,11 @@ public class UserController {
                     return userDtoList;
                 });
 
-        return R.success("导出成功");
+        return R.success("导出成功，请前往桌面查看");
     }
 
     @PutMapping("/firstUpdate")
-    public R<User> firstUpdate(@RequestBody User user){
+    public R<User> firstUpdate(@RequestBody User user) {
         userService.updateById(user);
         return R.success(user);
     }

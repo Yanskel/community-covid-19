@@ -51,7 +51,9 @@ public class SuppliesApplyController {
         BeanUtils.copyProperties(pageInfo, suppliesApplyDtoPage, "records");
 
         List<SuppliesApply> records = pageInfo.getRecords();
-        List<SuppliesApplyDto> list = records.stream().map(this::getSuppliesApplyDto).collect(Collectors.toList());
+        List<SuppliesApplyDto> list = records.stream()
+                .map(this::getSuppliesApplyDto)
+                .collect(Collectors.toList());
 
         suppliesApplyDtoPage.setRecords(list);
         return R.success(suppliesApplyDtoPage);
@@ -118,12 +120,13 @@ public class SuppliesApplyController {
     @NotNull
     private SuppliesApplyDto getSuppliesApplyDto(SuppliesApply item) {
         SuppliesApplyDto suppliesApplyDto = new SuppliesApplyDto();
+        BeanUtils.copyProperties(item, suppliesApplyDto);
 
-        suppliesApplyDto.setId(item.getId());
-        suppliesApplyDto.setNumber(item.getNumber());
-        suppliesApplyDto.setApplyTime(item.getApplyTime());
-        suppliesApplyDto.setStatus(item.getStatus());
-        suppliesApplyDto.setReply(item.getReply());
+//        suppliesApplyDto.setId(item.getId());
+//        suppliesApplyDto.setNumber(item.getNumber());
+//        suppliesApplyDto.setApplyTime(item.getApplyTime());
+//        suppliesApplyDto.setStatus(item.getStatus());
+//        suppliesApplyDto.setReply(item.getReply());
 
         User user = userService.getById(item.getResidentId());
         suppliesApplyDto.setResidentName(user.getName());

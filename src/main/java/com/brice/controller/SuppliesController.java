@@ -7,6 +7,7 @@ import com.brice.entity.Category;
 import com.brice.entity.Supplies;
 import com.brice.service.CategoryService;
 import com.brice.service.SuppliesService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,12 +32,13 @@ public class SuppliesController {
         //获取所有物资
         List<Supplies> list = suppliesService.list();
         List<SuppliesDto> dtoList = list.stream().map(supplies -> {
-
             SuppliesDto suppliesDto = new SuppliesDto();
-            suppliesDto.setId(supplies.getId());
-            suppliesDto.setName(supplies.getName());
-            suppliesDto.setTotal(supplies.getTotal());
-            suppliesDto.setCategoryId(supplies.getCategoryId());
+            BeanUtils.copyProperties(supplies,suppliesDto);
+
+//            suppliesDto.setId(supplies.getId());
+//            suppliesDto.setName(supplies.getName());
+//            suppliesDto.setTotal(supplies.getTotal());
+//            suppliesDto.setCategoryId(supplies.getCategoryId());
 
             LambdaQueryWrapper<Category> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
             categoryLambdaQueryWrapper.eq(Category::getId, supplies.getCategoryId());
