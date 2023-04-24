@@ -1,5 +1,6 @@
 package com.brice.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.brice.common.R;
 import com.brice.entity.Admin;
@@ -20,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
     @Autowired
     private AdminService adminService;
     @Autowired
@@ -36,10 +38,10 @@ public class AdminController {
     public R<Map<String, Object>> login(@RequestBody Admin admin, HttpServletRequest request) {
         String username = admin.getUsername();
         String password = admin.getPassword();
-        if (username == null || username.equals("")) {
+        if (StrUtil.isBlank(username)) {
             return R.error("请输入用户名");
         }
-        if (password == null || password.equals("")) {
+        if (StrUtil.isBlank(password)) {
             return R.error("请输入密码");
         }
         LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<>();

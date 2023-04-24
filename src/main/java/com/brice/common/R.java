@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 通用返回结果类
+ * @author Brice
  * @param <T>
  */
 @Data

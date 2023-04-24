@@ -12,7 +12,6 @@ import com.brice.service.ApartmentComplexService;
 import com.brice.service.SuppliesApplyService;
 import com.brice.service.SuppliesService;
 import com.brice.service.UserService;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -117,7 +116,6 @@ public class SuppliesApplyController {
      * @param item 物资申请
      * @return 物资申请Dto
      */
-    @NotNull
     private SuppliesApplyDto getSuppliesApplyDto(SuppliesApply item) {
         SuppliesApplyDto suppliesApplyDto = new SuppliesApplyDto();
         BeanUtils.copyProperties(item, suppliesApplyDto);
