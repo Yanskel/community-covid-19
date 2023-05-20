@@ -1,23 +1,32 @@
 package com.brice.controller;
 
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.brice.common.R;
-import com.brice.entity.Admin;
-import com.brice.entity.Menu;
-import com.brice.service.AdminService;
-import com.brice.service.MenuService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.brice.common.R;
+import com.brice.entity.Admin;
+import com.brice.entity.Menu;
+import com.brice.service.AdminService;
+import com.brice.service.MenuService;
 
+import cn.hutool.core.util.StrUtil;
+
+/**
+ * 管理员Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -30,7 +39,7 @@ public class AdminController {
     /**
      * 管理员登录
      *
-     * @param admin   用户对象
+     * @param admin 用户对象
      * @param request session
      * @return 正确的用户对象
      */

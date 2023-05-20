@@ -1,5 +1,15 @@
 package com.brice.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.brice.common.R;
@@ -12,15 +22,13 @@ import com.brice.service.ApartmentComplexService;
 import com.brice.service.SuppliesApplyService;
 import com.brice.service.SuppliesService;
 import com.brice.service.UserService;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
+/**
+ * 物资申请Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/suppliesApply")
 public class SuppliesApplyController {
@@ -42,7 +50,8 @@ public class SuppliesApplyController {
     public R<Page<SuppliesApplyDto>> getAll(int page, int pageSize, Long userId, int status) {
         Page<SuppliesApply> pageInfo = new Page<>(page, pageSize);
         LambdaQueryWrapper<SuppliesApply> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(userId != null, SuppliesApply::getResidentId, userId).eq(status != -1, SuppliesApply::getStatus, status);
+        queryWrapper.eq(userId != null, SuppliesApply::getResidentId, userId).eq(status != -1, SuppliesApply::getStatus,
+            status);
         queryWrapper.orderByDesc(SuppliesApply::getApplyTime);
         suppliesApplyService.page(pageInfo, queryWrapper);
 
@@ -50,9 +59,7 @@ public class SuppliesApplyController {
         BeanUtils.copyProperties(pageInfo, suppliesApplyDtoPage, "records");
 
         List<SuppliesApply> records = pageInfo.getRecords();
-        List<SuppliesApplyDto> list = records.stream()
-                .map(this::getSuppliesApplyDto)
-                .collect(Collectors.toList());
+        List<SuppliesApplyDto> list = records.stream().map(this::getSuppliesApplyDto).collect(Collectors.toList());
 
         suppliesApplyDtoPage.setRecords(list);
         return R.success(suppliesApplyDtoPage);
@@ -78,11 +85,11 @@ public class SuppliesApplyController {
      */
     @PutMapping
     public R<String> update(@RequestBody SuppliesApply suppliesApply) {
-        //如果通过
+        // 如果通过
         if (suppliesApply.getStatus() == 1) {
-            //物资总数-申请物资的数量
+            // 物资总数-申请物资的数量
             Supplies supplies = suppliesService.getById(suppliesApply.getSuppliesId());
-            //物资总数
+            // 物资总数
             Integer sum = supplies.getTotal();
             if (sum - suppliesApply.getNumber() < 0) {
                 return R.error("数量不足");
@@ -98,12 +105,12 @@ public class SuppliesApplyController {
      * 物资申请
      *
      * @param suppliesApply 物资实体
-     * @param request       session
+     * @param request session
      * @return 申请提交成功与否
      */
     @PostMapping
     public R<String> add(@RequestBody SuppliesApply suppliesApply, HttpServletRequest request) {
-        User user = (User) request.getSession().getAttribute("user");
+        User user = (User)request.getSession().getAttribute("user");
         suppliesApply.setResidentId(user.getId());
         suppliesApply.setApplyTime(LocalDateTime.now());
         suppliesApplyService.save(suppliesApply);
@@ -120,11 +127,11 @@ public class SuppliesApplyController {
         SuppliesApplyDto suppliesApplyDto = new SuppliesApplyDto();
         BeanUtils.copyProperties(item, suppliesApplyDto);
 
-//        suppliesApplyDto.setId(item.getId());
-//        suppliesApplyDto.setNumber(item.getNumber());
-//        suppliesApplyDto.setApplyTime(item.getApplyTime());
-//        suppliesApplyDto.setStatus(item.getStatus());
-//        suppliesApplyDto.setReply(item.getReply());
+        // suppliesApplyDto.setId(item.getId());
+        // suppliesApplyDto.setNumber(item.getNumber());
+        // suppliesApplyDto.setApplyTime(item.getApplyTime());
+        // suppliesApplyDto.setStatus(item.getStatus());
+        // suppliesApplyDto.setReply(item.getReply());
 
         User user = userService.getById(item.getResidentId());
         suppliesApplyDto.setResidentName(user.getName());

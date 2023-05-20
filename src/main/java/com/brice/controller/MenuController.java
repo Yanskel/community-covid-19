@@ -1,14 +1,21 @@
 package com.brice.controller;
 
-import com.brice.entity.Menu;
-import com.brice.service.MenuService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.brice.entity.Menu;
+import com.brice.service.MenuService;
 
+/**
+ * 菜单Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/menu")
 public class MenuController {

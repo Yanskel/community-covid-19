@@ -1,10 +1,17 @@
 package com.brice.controller;
 
-import cn.hutool.http.HttpUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.hutool.http.HttpUtil;
+
+/**
+ * Echarts Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/echarts")
 public class EchartsController {

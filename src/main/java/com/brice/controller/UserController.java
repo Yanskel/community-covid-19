@@ -1,5 +1,22 @@
 package com.brice.controller;
 
+import static com.brice.common.JacksonObjectMapper.DEFAULT_DATE_FORMAT;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.*;
+
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -14,22 +31,13 @@ import com.brice.service.ApartmentComplexService;
 import com.brice.service.HealthInfoService;
 import com.brice.service.MenuService;
 import com.brice.service.UserService;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.brice.common.JacksonObjectMapper.DEFAULT_DATE_FORMAT;
-
+/**
+ * 用户Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -45,29 +53,29 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param user    登录信息
+     * @param user 登录信息
      * @param request HttpServletRequest
      * @return 返回用户对象
      */
     @PostMapping("/login")
     public R<Map> login(@RequestBody User user, HttpServletRequest request) {
-        //密码进行MD5
+        // 密码进行MD5
         String password = user.getPassword();
         password = DigestUtils.md5DigestAsHex(password.getBytes());
-        //创建构造器
+        // 创建构造器
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        //根据用户名查找数据库
+        // 根据用户名查找数据库
         queryWrapper.eq(User::getUsername, user.getUsername());
         User userOne = userService.getOne(queryWrapper);
-        //没有该用户
+        // 没有该用户
         if (userOne == null) {
             return R.error("该用户名不存在");
         }
-        //密码错误
+        // 密码错误
         if (!userOne.getPassword().equals(password)) {
             return R.error("密码错误");
         }
-        //该账户已禁用
+        // 该账户已禁用
         if (userOne.getStatus() == 0) {
             return R.error("该账户已禁用，请联系管理员");
         }
@@ -132,7 +140,7 @@ public class UserController {
     @PutMapping
     public R<String> update(@RequestBody User user) {
         User byId = userService.getById(user.getId());
-        //如果姓名修改，则同时修改健康信息中对应的数据
+        // 如果姓名修改，则同时修改健康信息中对应的数据
         if (!Objects.equals(byId.getName(), user.getName())) {
             LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(HealthInfo::getResidentId, user.getId());
@@ -153,39 +161,39 @@ public class UserController {
     /**
      * 用户数据分页查询
      *
-     * @param page     当前页码
+     * @param page 当前页码
      * @param pageSize 每一页显示的条数
-     * @param name     条件（姓名）
+     * @param name 条件（姓名）
      * @return 处理过后的用户数据
      */
     @GetMapping("/page/{role}")
     public R<Page<UserDto>> getAll(int page, int pageSize, String name, @PathVariable Integer role) {
-        //添加分页构造器
+        // 添加分页构造器
         Page<User> pageInfo = new Page<>(page, pageSize);
-        //条件构造器
+        // 条件构造器
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(name), User::getName, name);
         queryWrapper.eq(User::getRole, role);
-        //查询出对应页数的数据
+        // 查询出对应页数的数据
         userService.page(pageInfo, queryWrapper);
-        //list对象拷贝
+        // list对象拷贝
         Page<UserDto> userDtoPage = new Page<>();
-        //排除数据库内容
+        // 排除数据库内容
         BeanUtils.copyProperties(pageInfo, userDtoPage, "records");
 
         List<User> records = pageInfo.getRecords();
         List<UserDto> list = records.stream().map(user -> {
-            //对象拷贝
+            // 对象拷贝
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties(user, userDto);
-            //根据居民自身的小区id查询小区名字
+            // 根据居民自身的小区id查询小区名字
             ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
             if (apartmentComplex != null) {
                 userDto.setAcName(apartmentComplex.getAcName());
             }
             return userDto;
         }).collect(Collectors.toList());
-        //重新写入新数据
+        // 重新写入新数据
         userDtoPage.setRecords(list);
         return R.success(userDtoPage);
     }
@@ -251,22 +259,20 @@ public class UserController {
             return userDto;
         }).collect(Collectors.toList());
 
-        //获取当前计算机用户名
+        // 获取当前计算机用户名
         String user = System.getProperty("user.name");
 
-        //日期格式化
+        // 日期格式化
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
         String time = LocalDateTime.now().format(timeFormatter);
 
         String PATH = "C:\\Users\\" + user + "\\Desktop\\";
         String fileName = PATH + "居民表" + time + ".xlsx";
 
-        EasyExcel.write(fileName, UserDto.class)
-                .sheet("模板")
-                .doWrite(() -> {
-                    // 分页查询数据
-                    return userDtoList;
-                });
+        EasyExcel.write(fileName, UserDto.class).sheet("模板").doWrite(() -> {
+            // 分页查询数据
+            return userDtoList;
+        });
 
         return R.success("导出成功，请前往桌面查看");
     }

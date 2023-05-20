@@ -1,15 +1,22 @@
 package com.brice.controller;
 
-import com.brice.common.R;
-import com.brice.entity.ApartmentComplex;
-import com.brice.service.ApartmentComplexService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.brice.common.R;
+import com.brice.entity.ApartmentComplex;
+import com.brice.service.ApartmentComplexService;
 
+/**
+ * 小区Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/apartmentComplex")
 public class ApartmentComplexController {
@@ -22,7 +29,7 @@ public class ApartmentComplexController {
      * @return 小区集合
      */
     @GetMapping
-    public R<List<ApartmentComplex>> getAll(){
+    public R<List<ApartmentComplex>> getAll() {
         List<ApartmentComplex> list = apartmentComplexService.list();
         return R.success(list);
     }

@@ -1,5 +1,15 @@
 package com.brice.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.brice.common.R;
@@ -10,15 +20,13 @@ import com.brice.entity.User;
 import com.brice.service.ApartmentComplexService;
 import com.brice.service.HealthInfoService;
 import com.brice.service.UserService;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
+/**
+ * 健康信息Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/healthInfo")
 public class HealthInfoController {
@@ -37,7 +45,7 @@ public class HealthInfoController {
      */
     @PostMapping
     public R<String> add(@RequestBody HealthInfo healthInfo, HttpServletRequest request) {
-        User user = (User) request.getSession().getAttribute("user");
+        User user = (User)request.getSession().getAttribute("user");
         healthInfo.setResidentId(user.getId());
         healthInfo.setResidentName(user.getName());
         healthInfo.setSubmitTime(LocalDateTime.now());
@@ -48,10 +56,10 @@ public class HealthInfoController {
     /**
      * 动态分页查询
      *
-     * @param page     当前页码
+     * @param page 当前页码
      * @param pageSize 每页数据量
-     * @param userId   用户id
-     * @param name     模糊姓名
+     * @param userId 用户id
+     * @param name 模糊姓名
      * @return 分页数据
      */
     @GetMapping("/page")
@@ -74,7 +82,7 @@ public class HealthInfoController {
 
             User user = userService.getById(item.getResidentId());
 
-            if (user.getAcId()!=null){
+            if (user.getAcId() != null) {
                 ApartmentComplex apartmentComplex = apartmentComplexService.getById(user.getAcId());
 
                 healthInfoDto.setResidentPhone(user.getPhone());
@@ -98,7 +106,7 @@ public class HealthInfoController {
      */
     @GetMapping
     public R<List<HealthInfo>> getList(HttpServletRequest request) {
-        User user = (User) request.getSession().getAttribute("user");
+        User user = (User)request.getSession().getAttribute("user");
         LambdaQueryWrapper<HealthInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(HealthInfo::getResidentId, user.getId());
         queryWrapper.orderByDesc(HealthInfo::getSubmitTime);

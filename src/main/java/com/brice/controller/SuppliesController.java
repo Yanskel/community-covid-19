@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 物资Controller
+ *
+ * @author Brice
+ * @date 2023/05/20
+ */
 @RestController
 @RequestMapping("/api/supplies")
 public class SuppliesController {
@@ -29,20 +35,20 @@ public class SuppliesController {
      */
     @GetMapping
     public R<List<SuppliesDto>> getAll() {
-        //获取所有物资
+        // 获取所有物资
         List<Supplies> list = suppliesService.list();
         List<SuppliesDto> dtoList = list.stream().map(supplies -> {
             SuppliesDto suppliesDto = new SuppliesDto();
-            BeanUtils.copyProperties(supplies,suppliesDto);
+            BeanUtils.copyProperties(supplies, suppliesDto);
 
-//            suppliesDto.setId(supplies.getId());
-//            suppliesDto.setName(supplies.getName());
-//            suppliesDto.setTotal(supplies.getTotal());
-//            suppliesDto.setCategoryId(supplies.getCategoryId());
+            // suppliesDto.setId(supplies.getId());
+            // suppliesDto.setName(supplies.getName());
+            // suppliesDto.setTotal(supplies.getTotal());
+            // suppliesDto.setCategoryId(supplies.getCategoryId());
 
             LambdaQueryWrapper<Category> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
             categoryLambdaQueryWrapper.eq(Category::getId, supplies.getCategoryId());
-            //查询相应物资分类
+            // 查询相应物资分类
             Category category = categoryService.getOne(categoryLambdaQueryWrapper);
             suppliesDto.setCategoryName(category.getType());
             return suppliesDto;
