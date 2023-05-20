@@ -20,8 +20,9 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 
 /**
- * 对象映射器:基于jackson将Java对象转为json，或者将json转为Java对象 将JSON解析为Java对象的过程称为 [从JSON反序列化Java对象] 从Java对象生成JSON的过程称为
- * [序列化Java对象到JSON]
+ * 对象映射器:基于jackson将Java对象转为json，或者将json转为Java对象
+ * 将JSON解析为Java对象的过程称为 [从JSON反序列化Java对象]
+ * 从Java对象生成JSON的过程称为 [序列化Java对象到JSON]
  *
  * @author Brice
  * @date 2023/05/20
