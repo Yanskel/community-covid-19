@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,7 +57,7 @@ public class AdminController {
         LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Admin::getUsername, username);
         Admin adminOne = adminService.getOne(queryWrapper);
-        if (adminOne == null) {
+        if (ObjectUtil.isNull(adminOne)) {
             return R.error("该用户名不存在");
         }
         if (!adminOne.getPassword().equals(password)) {

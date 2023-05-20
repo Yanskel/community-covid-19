@@ -53,13 +53,13 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param user 登录信息
-     * @param request HttpServletRequest
-     * @return 返回用户对象
+     * @param user    用户
+     * @param request {@link HttpServletRequest}
+     * @return {@link R}<{@link Map}<{@link String}, {@link Object}>>
      */
     @PostMapping("/login")
-    public R<Map> login(@RequestBody User user, HttpServletRequest request) {
-        // 密码进行MD5
+    public R<Map<String, Object>> login(@RequestBody User user, HttpServletRequest request) {
+        // 密码进行MD5加密
         String password = user.getPassword();
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         // 创建构造器
@@ -266,8 +266,8 @@ public class UserController {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
         String time = LocalDateTime.now().format(timeFormatter);
 
-        String PATH = "C:\\Users\\" + user + "\\Desktop\\";
-        String fileName = PATH + "居民表" + time + ".xlsx";
+        String path = "C:\\Users\\" + user + "\\Desktop\\";
+        String fileName = path + "居民表" + time + ".xlsx";
 
         EasyExcel.write(fileName, UserDto.class).sheet("模板").doWrite(() -> {
             // 分页查询数据

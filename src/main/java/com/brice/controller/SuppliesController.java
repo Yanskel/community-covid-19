@@ -39,13 +39,8 @@ public class SuppliesController {
         List<Supplies> list = suppliesService.list();
         List<SuppliesDto> dtoList = list.stream().map(supplies -> {
             SuppliesDto suppliesDto = new SuppliesDto();
+            // 对象拷贝
             BeanUtils.copyProperties(supplies, suppliesDto);
-
-            // suppliesDto.setId(supplies.getId());
-            // suppliesDto.setName(supplies.getName());
-            // suppliesDto.setTotal(supplies.getTotal());
-            // suppliesDto.setCategoryId(supplies.getCategoryId());
-
             LambdaQueryWrapper<Category> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
             categoryLambdaQueryWrapper.eq(Category::getId, supplies.getCategoryId());
             // 查询相应物资分类
