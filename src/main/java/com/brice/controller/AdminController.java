@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import cn.hutool.core.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +19,8 @@ import com.brice.entity.Menu;
 import com.brice.service.AdminService;
 import com.brice.service.MenuService;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ObjectUtil;
 
 /**
  * 管理员Controller
@@ -48,10 +48,10 @@ public class AdminController {
     public R<Map<String, Object>> login(@RequestBody Admin admin, HttpServletRequest request) {
         String username = admin.getUsername();
         String password = admin.getPassword();
-        if (StrUtil.isBlank(username)) {
+        if (CharSequenceUtil.isBlank(username)) {
             return R.error("请输入用户名");
         }
-        if (StrUtil.isBlank(password)) {
+        if (CharSequenceUtil.isBlank(password)) {
             return R.error("请输入密码");
         }
         LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<>();

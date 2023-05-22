@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
-import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -53,7 +53,7 @@ public class UserController {
     /**
      * 用户登录
      *
-     * @param user    用户
+     * @param user 用户
      * @param request {@link HttpServletRequest}
      * @return {@link R}<{@link Map}<{@link String}, {@link Object}>>
      */
@@ -269,10 +269,7 @@ public class UserController {
         String path = "C:\\Users\\" + user + "\\Desktop\\";
         String fileName = path + "居民表" + time + ".xlsx";
 
-        EasyExcel.write(fileName, UserDto.class).sheet("模板").doWrite(() -> {
-            // 分页查询数据
-            return userDtoList;
-        });
+        EasyExcelFactory.write(fileName, UserDto.class).sheet("模板").doWrite(() -> userDtoList);
 
         return R.success("导出成功，请前往桌面查看");
     }

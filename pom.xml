@@ -37,11 +37,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+        <!-- Druid -->
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>1.2.15</version>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.2.18</version>
         </dependency>
 
         <!-- mybatis-plus -->

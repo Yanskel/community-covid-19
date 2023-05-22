@@ -5,6 +5,8 @@ import com.alibaba.excel.annotation.ExcelProperty;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 用户实体类
  *
@@ -12,7 +14,11 @@ import lombok.Data;
  * @date 2023/05/20
  */
 @Data
-public class User {
+public class User implements Serializable {
+    /**
+     * 序列化ID
+     */
+    private static final long serialVersionUID = 1L;
     /**
      * id
      */

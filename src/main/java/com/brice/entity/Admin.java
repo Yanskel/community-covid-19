@@ -2,6 +2,8 @@ package com.brice.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 管理员实体类
  *
@@ -9,7 +11,11 @@ import lombok.Data;
  * @date 2023/05/20
  */
 @Data
-public class Admin {
+public class Admin implements Serializable {
+    /**
+     * 序列化ID
+     */
+    private static final long serialVersionUID = 1L;
     /**
      * id
      */

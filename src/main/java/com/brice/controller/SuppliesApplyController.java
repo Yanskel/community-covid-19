@@ -125,14 +125,8 @@ public class SuppliesApplyController {
      */
     private SuppliesApplyDto getSuppliesApplyDto(SuppliesApply item) {
         SuppliesApplyDto suppliesApplyDto = new SuppliesApplyDto();
+        // 对象拷贝
         BeanUtils.copyProperties(item, suppliesApplyDto);
-
-        // suppliesApplyDto.setId(item.getId());
-        // suppliesApplyDto.setNumber(item.getNumber());
-        // suppliesApplyDto.setApplyTime(item.getApplyTime());
-        // suppliesApplyDto.setStatus(item.getStatus());
-        // suppliesApplyDto.setReply(item.getReply());
-
         User user = userService.getById(item.getResidentId());
         suppliesApplyDto.setResidentName(user.getName());
         suppliesApplyDto.setAddress(user.getAddress());
